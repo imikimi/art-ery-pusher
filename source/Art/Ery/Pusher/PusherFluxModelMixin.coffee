@@ -1,10 +1,5 @@
 {
-  nextTick, BaseObject, log, merge
-  isString, isArray
-  flatten, compact
-  compactFlatten
-  consistentJsonStringify
-  inspectLean
+  defineModule, log, merge
 } = require 'art-foundation'
 
 {getPusherChannel, pusherEventName} = require './Common'

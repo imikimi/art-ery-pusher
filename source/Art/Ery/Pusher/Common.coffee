@@ -1,3 +1,4 @@
+{defineModule} = require 'art-foundation'
 ArtEry = require 'art-ery'
 
 defineModule module,
