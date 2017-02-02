@@ -2,7 +2,7 @@
   defineModule, log, merge
 } = require 'art-foundation'
 
-{getPusherChannel, pusherEventName} = require './Common'
+{config} = require './Config'
 
 ###
 SBD 2-1-2017
@@ -36,29 +36,46 @@ PusherFluxModelMixin is intended to be mixed into Art.Flux.FluxModels.
 defineModule module, -> (superClass) -> class PusherFluxModelMixin extends superClass
   constructor: ->
     super
-    @_openPusherChannels = {}
-    @_pusherChannelListeners = {}
+    @_channels = {}
+    @_listeners = {}
 
+  ####################
+  # FluxModel Overrides
+  ####################
   fluxStoreEntryUpdated: ({key, subscribers}) ->
+    @_subscribe key if subscribers.length > 0  # have local subscribers
     super
-    return unless self.pusher             # pusher is setup
-    return unless subscribers.length > 0  # have local subscribers
-    return if @_openPusherChannels[key]   # not subscribed in pusher channel
-
-    @_pusherChannelListeners[key] ||= => @load key
-    @_openPusherChannels[key] = pusher.subscribe @_getPusherChannel key
-    @_openPusherChannels[key].bind pusherEventName, @_pusherChannelListeners[key]
 
   fluxStoreEntryRemoved: ({key}) ->
+    @_unsubscribe key
     super
-    return unless self.pusher               # pusher is setup
-    return unless @_openPusherChannels[key] # subscribed to pusher channel
 
-    pusher.unsubscribe @_getPusherChannel key
-    @_openPusherChannels[key].unbind pusherEventName, @_pusherChannelListeners[key]
-    delete @_openPusherChannels[key]
-    delete @_pusherChannelListeners[key]
-
-  # private
+  ####################
+  # PRIVATE
+  ####################
   _getPusherChannel: (key) ->
-    getPusherChannel @pipeline.name, key
+    config.getPusherChannel @pipeline.name, key
+
+  # Pusher has the concept of subscribe & bind
+  # This does both in one step
+  # If config.pusher isn't defined: noop
+  _subscribe: (key) ->
+    {pusher, pusherEventName} = config
+
+    @_channels[key] ||= pusher?.subscribe @_getPusherChannel key
+    unless @_listeners[key]
+      @_channels[key].bind pusherEventName, @_listeners[key] = => @load key
+
+  # If config.pusher isn't defined: noop
+  _unsubscribe: (key) ->
+    {pusher, pusherEventName} = config
+    return unless pusher && @_channels[key]
+
+    # unbind
+    if @_listeners[key]
+      @_channels[key]?.unbind pusherEventName, @_listeners[key]
+      delete @_listeners[key]
+
+    # unsubscribe
+    pusher.unsubscribe @_getPusherChannel key
+    delete @_channels[key]

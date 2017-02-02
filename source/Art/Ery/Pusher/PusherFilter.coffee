@@ -4,11 +4,13 @@
 
 {Filter} = require 'art-ery'
 
-{getPusherChannel, pusherEventName} = require './Common'
+{config} = require './Common'
 
 sendChanged = (pipeline, key) ->
+  {getPusherChannel, pusherEventName} = config
+
   channel = getPusherChannel pipeline, key
-  pusher.send channel, pusherEventName, data = {}
+  config.pusher?.trigger? channel, pusherEventName, data = {}
 
 defineModule module, class PusherFilter extends Filter
   @location "server"
