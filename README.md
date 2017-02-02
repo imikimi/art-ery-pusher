@@ -4,7 +4,7 @@ An ArtEry Filter for using Pusher.com to trigger updates in all clients when aft
 
 ## Usage
 
-The main thing you have to do is add the PusherPipelineMixin to every ArtEry.Pipeline you want to participate in Pusher notifications for data created, updated or deleted:
+Other than initialization and configuration (see below), the only thing you have to do is add PusherPipelineMixin to every ArtEry.Pipeline you want to participate in ArtEryPusher notifications for created, updated or deleted records:
 
 ```coffeescript
 {PusherPipelineMixin} = require 'art-ery-pusher'
