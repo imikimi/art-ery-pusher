@@ -2,13 +2,23 @@
 
 An ArtEry Filter for using Pusher.com to trigger updates in all clients when after all creates and updates.
 
-### Usage
+## Usage
 
-ArtEryPusher needs to be 'required' differently depending on if this is the Client or the Server. This is an unfortunate side-effect of how Pusher bundles their code.
+The main thing you have to do is add the PusherPipelineMixin to every ArtEry.Pipeline you want to participate in Pusher notifications for data created, updated or deleted:
+
+```coffeescript
+{PusherPipelineMixin} = require 'art-ery-pusher'
+{Pipeline} = require 'art-ery'
+
+class MyPusherPipeline extends PusherPipelineMixin Pipeline
+  ...
+```
+
+Typically you'll want to enable this for Pipelines which are database-backed. It adds the PusherFilter to the pipeline, and, if you are using ArtFlux in your client, it ensures the PusherFluxModelMixin is used when creating the FluxModels.
 
 #### Init
 
-Because Pusher has different libraries for client and server, you need to require a different file depending on your context. This can be done right a the beginning of either your client or server code. It just loads the correct pusher library.
+Because Pusher has different libraries for client and server, you need to require a different file depending on your context. This can be done right at the beginning of either your client or server code. These only load the correct libraries. Initialization is done during configuration.
 
 Client:
 ```coffeescript
@@ -22,7 +32,9 @@ require 'art-ery-pusher/Server'
 
 #### Config
 
-ArtEryPusher uses the standard ArtSuite config system. There are many places you can set your config:
+ArtEryPusher uses the standard ArtSuite config system (currently in declared in Art.Foundation). The config path is "Art.Ery.Pusher." You can see all configurable options in: source/Art/Ery/Pusher/Config.coffee.
+
+The ArtSuite config system allows you to set your config in whatever place is most convenient:
 
 Shell environment variables:
 ```shell
@@ -47,31 +59,11 @@ defineModule module, class Development extends Config
     secret: 'ghi'
 ```
 
+Javascript Global:
+```coffeescript
+# TODO: look up how to do this - or actually write some doc for Art.Foundation.Config!
+```
+
 Recommendations:
 * Production: Use shell environment variables set on the server. Never check in production keys into your source control.
 * Development: Use whichever one is convenient.
-
-#### Client & Server
-
-This code will work both on the client and the server. It adds the PusherFilter to the pipeline, and, on the client, it ensures the PusherFluxModelMixin is used when creating the FluxModels.
-
-Every pipeline you declare this way will but send and respond to Pusher notifications about data created, updated or deleted.
-
-```coffeescript
-{PusherPipelineMixin} = require 'art-ery-pusher'
-{Pipeline} = require 'art-ery'
-
-class MyPusherPipeline extends PusherPipelineMixin Pipeline
-  ...
-```
-
-#### Client without Flux
-
-You can also use this w/o flux, theoretically.
-
-```coffeescript
-{PusherFluxModelMixin} = require 'art-ery-pusher/Client'
-{FluxModel} = require 'art-flux'
-
-class MyPusherFluxModel extends PusherFluxModelMixin FluxModel
-```
