@@ -53,7 +53,9 @@ Recommendations:
 
 #### Client & Server
 
-This code will work both on the client and the server
+This code will work both on the client and the server. It adds the PusherFilter to the pipeline, and, on the client, it ensures the PusherFluxModelMixin is used when creating the FluxModels.
+
+Every pipeline you declare this way will but send and respond to Pusher notifications about data created, updated or deleted.
 
 ```coffeescript
 {PusherPipelineMixin} = require 'art-ery-pusher'
