@@ -4,7 +4,7 @@ An ArtEry Filter for using Pusher.com to trigger updates in all clients when aft
 
 ## Usage
 
-Other than initialization and configuration (see below), the only thing you have to do is add PusherPipelineMixin to every ArtEry.Pipeline you want to participate in ArtEryPusher notifications for created, updated or deleted records:
+Other than init and config (see below), the only thing you have to do is add PusherPipelineMixin to every ArtEry.Pipeline you want to participate in ArtEryPusher notifications for created, updated or deleted records:
 
 ```coffeescript
 {PusherPipelineMixin} = require 'art-ery-pusher'
@@ -18,7 +18,7 @@ Typically you'll want to enable this for Pipelines which are database-backed. It
 
 #### Init
 
-Because Pusher has different libraries for client and server, you need to require a different file depending on your context. This can be done right at the beginning of either your client or server code. These only load the correct libraries. Initialization is done during configuration.
+Because Pusher has different libraries for client and server, you need to require a different file depending on your context. This can be done right at the beginning of either your client or server code. These only load the correct libraries. The Pusher libraries are initialized automatically after ArtSuite configuration.
 
 Client:
 ```coffeescript
