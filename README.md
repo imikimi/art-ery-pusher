@@ -40,7 +40,7 @@ Config file:
 # Production.coffee
 {defineModule, Config} = require 'art-foundation'
 
-defineModule module, class Production extends Config
+defineModule module, class Development extends Config
   Art: Ery: Pusher:
     apiId:  'abc'
     key:    'def'
