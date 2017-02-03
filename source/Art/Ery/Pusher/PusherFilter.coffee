@@ -8,11 +8,11 @@
 
 {config} = Config = require './Config'
 
-sendChanged = (pipeline, key) ->
+sendChanged = (pipeline, key, payload) ->
   {pusherEventName} = config
 
   channel = Config.getPusherChannel pipeline, key
-  Config.pusherServer.trigger? channel, pusherEventName, data = {}
+  Config.pusherServer.trigger? channel, pusherEventName, payload || {}
 
 defineModule module, class PusherFilter extends Filter
   @location "server"
@@ -25,10 +25,15 @@ defineModule module, class PusherFilter extends Filter
       {type, key, data, pipelineName, request, pipeline} = response
       data = merge request.data, data, key && pipeline.toKeyObject key
 
-      promises = for queryPipeline in pipeline.queries
-        sendChanged queryPipeline, data
+      payload = {type}
 
-      promises.push sendChanged pipeline, data
+      promises = for queryName, {toKeyString} of pipeline.queries
+        if key = toKeyString data
+          sendChanged queryName, key, payload
+
+      # record updated notification - no need to send on 'create' because no-one will be listening.
+      unless type == "create"
+        promises.push sendChanged pipeline, data, payload
 
       promises
 

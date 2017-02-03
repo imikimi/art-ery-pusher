@@ -5,6 +5,11 @@
 defineModule module, class PusherTestPipeline extends PusherPipelineMixin KeyFieldsMixin Pipeline
   @remoteServer "http://localhost:8085"
 
+  @query
+    pusherTestsByNoodleId:
+      query: (request) -> [] # empty result set
+      toKeyString: ({noodleId}) -> noodleId
+
   @handlers
     # get:    (request) ->
 
