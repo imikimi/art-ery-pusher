@@ -2,24 +2,27 @@
 {pipelines} = require 'art-ery'
 {Config, config} = require 'art-ery-pusher'
 
-subscribeTest = ({data, key, requestType, pipeline, subscriptionKey}) ->
-  pipeline ||= "pusherTestPipeline"
-  subscriptionKey ||= key
-  channel = Config.getPusherChannel pipeline, subscriptionKey
-  test "#{requestType} should trigger event on #{channel}", ->
+subscribeTest = ({data, requestType, subscriptionPipeline, subscriptionKey}) ->
+  subscriptionPipeline ||= "pusherTestPipeline"
+  test "#{requestType} should trigger event", ->
     listener = channelSubscription = null
 
-    new Promise (resolve) ->
-      log "starting subscription listener for #{channel}::#{config.pusherEventName}"
-      channelSubscription = Config.pusherClient.subscribe channel
-      .bind config.pusherEventName, listener = resolve
+    pipelines.pusherTestPipeline.create()
+    .then ({id}) ->
+      subscriptionKey ||= id
+      channel = Config.getPusherChannel subscriptionPipeline, subscriptionKey
 
-      pipelines.pusherTestPipeline[requestType] {key, data}
+      new Promise (resolve) ->
+        log "starting subscription listener for #{channel}::#{config.pusherEventName}"
+        channelSubscription = Config.pusherClient.subscribe channel
+        .bind config.pusherEventName, listener = resolve
 
-    .then (result) ->
-      log "channel: #{channel}, event: #{config.pusherEventName}": {result}
-      channelSubscription.unbind listener
-      Config.pusherClient.unsubscribe channel
+        pipelines.pusherTestPipeline[requestType] {key: id, data}
+
+      .then (result) ->
+        log "channel: #{channel}, event: #{config.pusherEventName}": {result}
+        channelSubscription.unbind listener
+        Config.pusherClient.unsubscribe channel
 
 defineModule module, suite:
   "basic requests": ->
@@ -27,24 +30,25 @@ defineModule module, suite:
       pipelines.pusherTestPipeline.create data: noodleId: "noodle1"
 
     test "update should notifiy related queries and the updated record", ->
-      pipelines.pusherTestPipeline.update data: noodleId: "noodle2", id: randomString()
+      pipelines.pusherTestPipeline.create data: noodleId: "noodle1"
+      .then ({id}) ->
+        pipelines.pusherTestPipeline.update data: noodleId: "noodle2", id: id
 
     test "delete should notifiy related queries and the deleted record", ->
-      pipelines.pusherTestPipeline.delete key: randomString()
+      pipelines.pusherTestPipeline.create data: noodleId: "noodle1"
+      .then ({id}) ->
+        pipelines.pusherTestPipeline.delete key: id
 
   "round trip tests": ->
     subscribeTest
       requestType: "update"
-      key: key = "ust1"
-      data: id: key
+      data: foo: "bar"
 
     subscribeTest
       requestType: "delete"
-      key: key = "ust1"
 
     subscribeTest
       requestType: "update"
-      key: key = "ust1"
-      pipeline: "pusherTestsByNoodleId"
-      data: id: key, noodleId: "123"
+      data: noodleId: "123"
+      subscriptionPipeline: "pusherTestsByNoodleId"
       subscriptionKey: "123"

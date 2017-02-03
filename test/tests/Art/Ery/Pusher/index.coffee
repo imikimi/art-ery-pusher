@@ -3,5 +3,6 @@
 
 module.exports = require './namespace'
 .addModules
-  PusherFilter: require './PusherFilter'
+  PusherFilter:         require './PusherFilter'        
+  PusherFluxModelMixin: require './PusherFluxModelMixin'
 require './Pipelines'
