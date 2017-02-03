@@ -1,4 +1,4 @@
-{log, defineModule, BaseObject} = require 'art-foundation'
+{log, timeout, defineModule, BaseObject} = require 'art-foundation'
 {FluxSubscriptionsMixin} = require 'art-flux'
 {pipelines} = require 'art-ery'
 
@@ -6,13 +6,23 @@ defineModule module, suite: ->
   class MySubscriber extends FluxSubscriptionsMixin BaseObject
     ;
 
-  test "foo", ->
+  test "full test", ->
     mySubscriber = new MySubscriber
-    myTestKey = "123"
+    id = null
 
-    mySubscriber.subscribe
-      modelName:  "pusherTestPipeline"
-      key:        myTestKey
-      callback:   (fluxRecord) -> log {fluxRecord}
+    new Promise (resolve) ->
+      pipelines.simpleStore.create data: foo: "initial value"
+      .then (response) ->
+        {id} = response
 
-    mySubscriber.unsubscribe "pusherTestPipeline"
+        mySubscriber.subscribe
+          modelName:  "simpleStore"
+          key:        id
+          callback:   ({data}) ->
+            resolve() if data.foo == "second value"
+
+      .then ->
+        pipelines.simpleStore.update log data: {id, foo: "second value"}
+
+    .then ->
+      mySubscriber.unsubscribe "simpleStore"

@@ -3,4 +3,4 @@
 
 module.exports = require './namespace'
 .addModules
-  PusherTestPipeline: require './PusherTestPipeline'
+  SimpleStore: require './SimpleStore'

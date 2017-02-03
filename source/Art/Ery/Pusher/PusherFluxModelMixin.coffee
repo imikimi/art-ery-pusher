@@ -2,7 +2,7 @@
   defineModule, log, merge
 } = require 'art-foundation'
 
-{config} = require './Config'
+{config} = Config = require './Config'
 defineModule module, -> (superClass) -> class PusherFluxModelMixin extends superClass
   constructor: ->
     super
@@ -24,15 +24,17 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
   # PRIVATE
   ####################
   _getPusherChannel: (key) ->
-    config.getPusherChannel @pipeline.name, key
+    Config.getPusherChannel @pipeline.name, key
 
   # Pusher has the concept of subscribe & bind
   # This does both in one step
   # If config.pusher isn't defined: noop
   _subscribe: (key) ->
-    {pusher, pusherEventName} = config
+    {pusherEventName} = config
+    {pusherClient} = Config
+    return unless pusherClient
 
-    @_channels[key] ||= pusher?.subscribe @_getPusherChannel key
+    @_channels[key] ||= pusherClient.subscribe @_getPusherChannel key
     unless @_listeners[key]
       @_channels[key].bind pusherEventName, @_listeners[key] = (pusherEventData) =>
         # TODO
@@ -44,8 +46,9 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
 
   # If config.pusher isn't defined: noop
   _unsubscribe: (key) ->
-    {pusher, pusherEventName} = config
-    return unless pusher && @_channels[key]
+    {pusherEventName} = config
+    {pusherClient} = Config
+    return unless pusherClient && @_channels[key]
 
     # unbind
     if @_listeners[key]
@@ -53,5 +56,5 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
       delete @_listeners[key]
 
     # unsubscribe
-    pusher.unsubscribe @_getPusherChannel key
+    pusherClient.unsubscribe @_getPusherChannel key
     delete @_channels[key]

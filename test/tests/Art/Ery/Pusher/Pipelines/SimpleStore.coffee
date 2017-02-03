@@ -2,7 +2,7 @@
 {PusherPipelineMixin} = require 'art-ery-pusher'
 {Pipeline, KeyFieldsMixin} = require 'art-ery'
 
-defineModule module, class PusherTestPipeline extends PusherPipelineMixin KeyFieldsMixin Pipeline
+defineModule module, class SimpleStore extends PusherPipelineMixin KeyFieldsMixin Pipeline
   @remoteServer "http://localhost:8085"
 
   constructor: ->
@@ -15,7 +15,7 @@ defineModule module, class PusherTestPipeline extends PusherPipelineMixin KeyFie
       toKeyString: ({noodleId}) -> noodleId
 
   @handlers
-    get: (request) ->
+    get: ({key}) ->
       @db[key]
 
     create: (request) ->
