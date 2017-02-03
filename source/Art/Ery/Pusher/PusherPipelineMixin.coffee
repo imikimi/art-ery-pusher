@@ -3,6 +3,7 @@ PusherFluxModelMixin = require './PusherFluxModelMixin'
 PusherFilter = require './PusherFilter'
 
 defineModule module, -> (superClass) -> class PusherPipelineMixin extends superClass
+  @abstractClass?()
   getFluxModelMixins: -> [super, PusherFluxModelMixin]
 
   ###

@@ -14,7 +14,7 @@ sendChanged = (pipeline, key, payload) ->
   {pusherEventName} = config
 
   channel = Config.getPusherChannel pipeline, key
-  Config.pusherServer.trigger? channel, pusherEventName, payload || {}
+  Config.pusherServer?.trigger channel, pusherEventName, payload || {}
 
 defineModule module, class PusherFilter extends Filter
   @location "server"
@@ -36,7 +36,7 @@ defineModule module, class PusherFilter extends Filter
         payload = {type, sender: session.artEryPusherSession}
 
         promises = for queryName, {toKeyString} of pipeline.queries
-          if key = toKeyString data
+          if key = toKeyString? data
             sendChanged queryName, key, payload
 
         # record updated notification - no need to send on 'create' because no-one will be listening.

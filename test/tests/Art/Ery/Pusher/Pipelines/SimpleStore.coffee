@@ -3,6 +3,7 @@
 {Pipeline, KeyFieldsMixin} = require 'art-ery'
 
 defineModule module, class SimpleStore extends PusherPipelineMixin KeyFieldsMixin Pipeline
+
   @remoteServer "http://localhost:8085"
 
   constructor: ->
