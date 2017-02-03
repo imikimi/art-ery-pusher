@@ -3,5 +3,5 @@
 
 module.exports = require './namespace'
 .addModules
-  Basics: require './Basics'
+  PusherFilter: require './PusherFilter'
 require './Pipelines'

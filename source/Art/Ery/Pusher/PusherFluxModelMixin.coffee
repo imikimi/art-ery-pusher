@@ -34,7 +34,13 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
 
     @_channels[key] ||= pusher?.subscribe @_getPusherChannel key
     unless @_listeners[key]
-      @_channels[key].bind pusherEventName, @_listeners[key] = => @load key
+      @_channels[key].bind pusherEventName, @_listeners[key] = (pusherEventData) =>
+        # TODO
+        # If this isn't a query model && pusherEventData.type == "delete"
+        #   then we can just set status: missing without triggering a reload
+        # If this is a query model, we can remove the deleted record
+        #   but we need the record's id to be in the pusherEventData...
+        @load key
 
   # If config.pusher isn't defined: noop
   _unsubscribe: (key) ->

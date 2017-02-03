@@ -59,8 +59,10 @@ defineModule module, class ArtEryPusherConfig extends Configurable
 
       verbose && log "ArtEryPusher: PusherClient initialized"
 
-      verifyConnection && @pusherClient.connection.bind 'state_change', (data) ->
-        log "ArtEryPusher: pusher state change": data
+      if verifyConnection
+        log "ArtEryPusher: PusherClient - subscribing to connection state_change"
+        @pusherClient.connection.bind 'state_change', (data) ->
+          log "ArtEryPusher: PusherClient state_change": data
 
     else if @PusherServer
       @pusherServer = new @PusherServer log "pusher config", @config

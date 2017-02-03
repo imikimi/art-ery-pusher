@@ -4,16 +4,19 @@ require 'art-ery-pusher/Server'
 Server  = require 'art-ery/Server'
 require "./test/tests/Art/Ery/Pusher/Pipelines"
 
+require "./test/TestConfig"
+
 ConfigRegistry.configure
-  artConfig:
-    verbose: true
-    Art:
-      Ery:
-        verbose: true
-        Pusher: merge
-          verifyConnection: true
-          verbose: true
-          require "./.TestPusherAppCredentials"
+  artConfigName: "Test"
+  # artConfig:
+  #   verbose: true
+  #   Art:
+  #     Ery:
+  #       verbose: true
+  #       Pusher: merge
+  #         verifyConnection: true
+  #         verbose: true
+  #         require "./.TestPusherAppCredentials"
 
 ###
 NOTE: .TestPusherAppCredentials.coffee should look like this:
