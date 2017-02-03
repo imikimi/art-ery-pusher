@@ -4,7 +4,7 @@
 
 {Filter} = require 'art-ery'
 
-{config} = require './Common'
+{config} = require './Config'
 
 sendChanged = (pipeline, key) ->
   {getPusherChannel, pusherEventName} = config

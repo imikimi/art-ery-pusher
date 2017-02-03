@@ -25,3 +25,6 @@ node_modules
 
 # imikimi
 build/
+
+# private config
+.TestPusherAppCredentials.coffee

@@ -1,6 +1,4 @@
-Pusher = require 'pusher-js'
-
 ArtEryPusher = require './index'
-.config.newPusher = -> new Pusher @key
+.Config.PusherClient = require 'pusher-js'
 
 module.exports = ArtEryPusher
