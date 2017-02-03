@@ -1,5 +1,5 @@
 {defineModule, randomString, formattedInspect, log} = require 'art-foundation'
-{pipelines} = require 'art-ery'
+{pipelines, session} = require 'art-ery'
 {Config, config} = require 'art-ery-pusher'
 
 subscribeTest = ({data, requestType, subscriptionPipeline, subscriptionKey}) ->
@@ -26,6 +26,9 @@ subscribeTest = ({data, requestType, subscriptionPipeline, subscriptionKey}) ->
 
 defineModule module, suite:
   "basic requests": ->
+    setup ->
+      # session.reset()
+
     test "create should only notifiy related queries", ->
       pipelines.simpleStore.create data: noodleId: "noodle1"
 
@@ -38,6 +41,27 @@ defineModule module, suite:
       pipelines.simpleStore.create data: noodleId: "noodle1"
       .then ({id}) ->
         pipelines.simpleStore.delete key: id
+
+  "artEryPusherSession": ->
+    setup ->
+      session.reset()
+
+    test "request generates session", ->
+      assert.doesNotExist session.data.artEryPusherSession
+      pipelines.simpleStore.create data: noodleId: "noodle1"
+      .then ->
+        assert.isString session.data.artEryPusherSession
+
+    test "persists across requests", ->
+      assert.doesNotExist session.data.artEryPusherSession
+      artEryPusherSession = null
+      pipelines.simpleStore.create data: noodleId: "noodle1"
+      .then ->
+        assert.isString session.data.artEryPusherSession
+        {artEryPusherSession} = session.data
+        pipelines.simpleStore.create data: noodleId: "noodle2"
+      .then ->
+        assert.eq artEryPusherSession, session.data.artEryPusherSession
 
   "round trip tests": ->
     subscribeTest

@@ -2,6 +2,8 @@
   log
   each, formattedInspect, deepMerge, merge, defineModule, log, Validator, m, isFunction, objectHasKeys
   Promise
+  isString
+  randomString
 } = require 'art-foundation'
 
 {Filter} = require 'art-ery'
@@ -17,24 +19,30 @@ sendChanged = (pipeline, key, payload) ->
 defineModule module, class PusherFilter extends Filter
   @location "server"
   @after all: (response) ->
-    switch response.type
-      when "create", "update", "delete"
-      else return response
+    p = if isString response.session.artEryPusherSession
+      Promise.resolve response
+    else
+      response.withMergedSession artEryPusherSession: randomString().slice 0, 12 # should produce > 10^20 unique values
 
-    Promise.then ->
-      {type, key, data, pipelineName, request, pipeline} = response
-      data = merge request.data, data, key && pipeline.toKeyObject key
+    p.then (response) ->
+      switch response.type
+        when "create", "update", "delete"
+        else return response
 
-      payload = {type}
+      Promise.then ->
+        {type, key, data, pipelineName, request, pipeline, session} = response
+        data = merge request.data, data, key && pipeline.toKeyObject key
 
-      promises = for queryName, {toKeyString} of pipeline.queries
-        if key = toKeyString data
-          sendChanged queryName, key, payload
+        payload = {type, sender: session.artEryPusherSession}
 
-      # record updated notification - no need to send on 'create' because no-one will be listening.
-      unless type == "create"
-        promises.push sendChanged pipeline, data, payload
+        promises = for queryName, {toKeyString} of pipeline.queries
+          if key = toKeyString data
+            sendChanged queryName, key, payload
 
-      promises
+        # record updated notification - no need to send on 'create' because no-one will be listening.
+        unless type == "create"
+          promises.push sendChanged pipeline, data, payload
 
-    .then -> response
+        promises
+
+      .then -> response

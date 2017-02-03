@@ -3,6 +3,7 @@
 } = require 'art-foundation'
 
 {config} = Config = require './Config'
+{session} = require 'art-ery'
 defineModule module, -> (superClass) -> class PusherFluxModelMixin extends superClass
   constructor: ->
     super
@@ -36,13 +37,15 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
 
     @_channels[key] ||= pusherClient.subscribe @_getPusherChannel key
     unless @_listeners[key]
-      @_channels[key].bind pusherEventName, @_listeners[key] = (pusherEventData) =>
+      @_channels[key].bind pusherEventName, @_listeners[key] = ({sender}) =>
+        log PusherFluxModelMixin: listener: {key, sender, artEryPusherSession: session.data.artEryPusherSession}
         # TODO
         # If this isn't a query model && pusherEventData.type == "delete"
         #   then we can just set status: missing without triggering a reload
         # If this is a query model, we can remove the deleted record
         #   but we need the record's id to be in the pusherEventData...
-        @load key
+        unless sender == session.data.artEryPusherSession
+          @load key
 
   # If config.pusher isn't defined: noop
   _unsubscribe: (key) ->
