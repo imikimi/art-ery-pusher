@@ -1,8 +1,9 @@
-{defineModule, randomString} = require 'art-foundation'
+{defineModule, randomString, merge} = require 'art-foundation'
 {PusherPipelineMixin} = require 'art-ery-pusher'
-{Pipeline} = require 'art-ery'
+{Pipeline, KeyFieldsMixin} = require 'art-ery'
 
-defineModule module, class PusherTestPipeline extends PusherPipelineMixin Pipeline
+defineModule module, class PusherTestPipeline extends PusherPipelineMixin KeyFieldsMixin Pipeline
+  @remoteServer "http://localhost:8085"
 
   @handlers
     # get:    (request) ->

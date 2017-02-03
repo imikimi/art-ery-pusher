@@ -1,4 +1,5 @@
 {defineModule, Configurable, log} = require 'art-foundation'
+ArtEry = require 'art-ery'
 
 defineModule module, class ArtEryPusherConfig extends Configurable
   ###
@@ -30,8 +31,16 @@ defineModule module, class ArtEryPusherConfig extends Configurable
 
     host: "api.pusherapp.com"
 
-  getPusherChannel: (pipeline, key) ->
-    [ArtEry.config.tableNamePrefix, pipeline, pipeline.toKeyString key].join '//'
+  # legal channel names: https://pusher.com/docs/client_api_guide/client_channels
+  # I think this matches legal channel names: /^[-a-zA-Z0-9_=@,.;]+$/
+  encodeKeyString: (key) ->
+    # any character that is illegal OR "." is replaced with ";"
+    key.replace /[^-a-zA-Z0-9_=@,;]/g, ";"
+
+  @getPusherChannel: (pipeline, key) ->
+    log getPusherChannel: {pipeline, key}
+
+    [ArtEry.config.tableNamePrefix, pipeline.getName(), pipeline.toKeyString(key)].join '.'
 
   @configured: ->
     super

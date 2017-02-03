@@ -1,16 +1,18 @@
 {
+  log
   each, formattedInspect, deepMerge, merge, defineModule, log, Validator, m, isFunction, objectHasKeys
+  Promise
 } = require 'art-foundation'
 
 {Filter} = require 'art-ery'
 
-{config} = require './Config'
+{config} = Config = require './Config'
 
 sendChanged = (pipeline, key) ->
-  {getPusherChannel, pusherEventName} = config
+  {pusherEventName} = config
 
-  channel = getPusherChannel pipeline, key
-  config.pusher?.trigger? channel, pusherEventName, data = {}
+  channel = Config.getPusherChannel pipeline, key
+  Config.pusherServer.trigger? channel, pusherEventName, data = {}
 
 defineModule module, class PusherFilter extends Filter
   @location "server"

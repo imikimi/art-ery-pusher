@@ -14,13 +14,14 @@ ConfigRegistry.configure
           verifyConnection: true
           verbose: true
           require "./.TestPusherAppCredentials"
-          ###
-          NOTE: .TestPusherAppCredentials.coffee should look like this:
-          module.exports =
-            appId:  '...'
-            key:    '...'
-            secret: '...'
-          ###
+
+###
+NOTE: .TestPusherAppCredentials.coffee should look like this:
+module.exports =
+  appId:  '...'
+  key:    '...'
+  secret: '...'
+###
 
 Server.start
   static: root: "./test/public/"
