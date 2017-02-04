@@ -4,7 +4,7 @@ PusherFilter = require './PusherFilter'
 
 defineModule module, -> (superClass) -> class PusherPipelineMixin extends superClass
   @abstractClass?()
-  getFluxModelMixins: -> [super, PusherFluxModelMixin]
+  @fluxModelMixin PusherFluxModelMixin
 
   ###
   NOTE: This Filter will run very first after the handler

@@ -28,7 +28,7 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
     Config.getPusherChannel @pipeline.name, key
 
   # Pusher has the concept of subscribe & bind
-  # This does both in one step
+  # This does both in one step.
   # If config.pusher isn't defined: noop
   _subscribe: (key) ->
     {pusherEventName} = config
@@ -37,15 +37,7 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
 
     @_channels[key] ||= pusherClient.subscribe @_getPusherChannel key
     unless @_listeners[key]
-      @_channels[key].bind pusherEventName, @_listeners[key] = ({sender}) =>
-        log PusherFluxModelMixin: listener: {key, sender, artEryPusherSession: session.data.artEryPusherSession}
-        # TODO
-        # If this isn't a query model && pusherEventData.type == "delete"
-        #   then we can just set status: missing without triggering a reload
-        # If this is a query model, we can remove the deleted record
-        #   but we need the record's id to be in the pusherEventData...
-        unless sender == session.data.artEryPusherSession
-          @load key
+      @_channels[key].bind pusherEventName, @_listeners[key] = (pusherData) => @_processPusherChangedEvent pusherData
 
   # If config.pusher isn't defined: noop
   _unsubscribe: (key) ->
@@ -61,3 +53,16 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
     # unsubscribe
     pusherClient.unsubscribe @_getPusherChannel key
     delete @_channels[key]
+
+  _processPusherChangedEvent: ({key, sender, updatedAt}) =>
+    if sender == session.data.artEryPusherSession
+      log "saved 1 reload due to sender check! (model: #{@name}, key: #{key})"
+      return
+    log PusherFluxModelMixin: listener: {key, sender, updatedAt, model: @}
+    model = @recordsModel || @
+
+    if (fluxRecord = model.fluxStoreGet key) && fluxRecord.updatedAt >= updatedAt
+      log "saved 1 reload due to updatedAt check! (model: #{@name}, key: #{key})"
+      return
+
+    model.loadPromise key

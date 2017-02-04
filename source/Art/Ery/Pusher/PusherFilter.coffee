@@ -33,7 +33,12 @@ defineModule module, class PusherFilter extends Filter
         {type, key, data, pipelineName, request, pipeline, session} = response
         data = merge request.data, data, key && pipeline.toKeyObject key
 
-        payload = {type, sender: session.artEryPusherSession}
+        payload = {
+          type
+          sender:   session.artEryPusherSession
+          key:      key || pipeline.toKeyString data
+        }
+        payload.updatedAt = data.updatedAt if data.updatedAt
 
         promises = for queryName, {toKeyString} of pipeline.queries
           if key = toKeyString? data
