@@ -13,7 +13,7 @@ defineModule module, class SimpleStore extends PusherPipelineMixin KeyFieldsMixi
   @query
     pusherTestsByNoodleId:
       query: ({key}) -> array @db, when: (v, k) -> v.noodleId == key
-      toKeyString: ({noodleId}) -> noodleId
+      dataToKeyString: ({noodleId}) -> noodleId
 
   @handlers
     get: ({key}) ->

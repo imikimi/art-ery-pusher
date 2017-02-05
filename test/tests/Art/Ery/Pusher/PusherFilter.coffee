@@ -4,7 +4,7 @@
 
 subscribeTest = ({data, requestType, subscriptionPipeline, subscriptionKey}) ->
   subscriptionPipeline ||= "simpleStore"
-  test "#{requestType} should trigger event", ->
+  test "#{subscriptionPipeline}.#{requestType} should trigger event", ->
     listener = channelSubscription = null
 
     pipelines.simpleStore.create()

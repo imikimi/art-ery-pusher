@@ -40,8 +40,8 @@ defineModule module, class PusherFilter extends Filter
         }
         payload.updatedAt = data.updatedAt if data.updatedAt
 
-        promises = for queryName, {toKeyString} of pipeline.queries
-          if key = toKeyString? data
+        promises = for queryName, pipelineQuery of pipeline.queries
+          if key = pipelineQuery.toKeyString data
             sendChanged queryName, key, payload
 
         # record updated notification - no need to send on 'create' because no-one will be listening.
