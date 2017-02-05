@@ -25,7 +25,7 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
   # PRIVATE
   ####################
   _getPusherChannel: (key) ->
-    Config.getPusherChannel @pipeline.name, key
+    Config.getPusherChannel @name, key
 
   # Pusher has the concept of subscribe & bind
   # This does both in one step.
@@ -58,7 +58,7 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
     if sender == session.data.artEryPusherSession
       log "saved 1 reload due to sender check! (model: #{@name}, key: #{key})"
       return
-    log PusherFluxModelMixin: listener: {key, sender, updatedAt, model: @}
+
     model = @recordsModel || @
 
     if (fluxRecord = model.fluxStoreGet key) && fluxRecord.updatedAt >= updatedAt

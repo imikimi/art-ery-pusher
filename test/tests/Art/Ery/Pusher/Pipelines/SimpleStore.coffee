@@ -1,10 +1,19 @@
-{defineModule, array, randomString, merge} = require 'art-foundation'
+{defineModule, log, array, randomString, merge} = require 'art-foundation'
 {PusherPipelineMixin} = require 'art-ery-pusher'
 {Pipeline, KeyFieldsMixin} = require 'art-ery'
 
 defineModule module, class SimpleStore extends PusherPipelineMixin KeyFieldsMixin Pipeline
 
   @remoteServer "http://localhost:8085"
+
+  @filter
+    location: "client"
+    name: "fakeDataUpdatesFilter"
+    after: get: (response) ->
+      {key, responseData, pipeline, pipelineName} = response
+      key ||= pipeline.toKeyString responseData
+      Neptune.Art.Flux.models[pipelineName].dataUpdated key, responseData
+      response
 
   constructor: ->
     super
@@ -16,6 +25,8 @@ defineModule module, class SimpleStore extends PusherPipelineMixin KeyFieldsMixi
       dataToKeyString: ({noodleId}) -> noodleId
 
   @handlers
+    reset: -> @db = {}
+
     get: ({key}) ->
       @db[key]
 

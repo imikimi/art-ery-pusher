@@ -1,6 +1,15 @@
 {defineModule, Configurable, log, isString} = require 'art-foundation'
 ArtEry = require 'art-ery'
 
+###
+Pusher provieds a testing stub:
+https://blog.pusher.com/testing-your-integration-with-the-pusher-javascript-library/
+  "pusher-test-sub.js"
+
+Could be useful for testing.
+
+I'm having problems testing since connections can take a bit to fire up...
+###
 defineModule module, class ArtEryPusherConfig extends Configurable
   ###
   /Client.coffee and /Server.coffee set this appropriatly:
@@ -78,3 +87,19 @@ defineModule module, class ArtEryPusherConfig extends Configurable
     else
       if verbose
         log "ArtEryPusher disabled. Require: art-ery-pusher/Client or art-ery-pusher/Server"
+
+  # Client-side only
+  # promise.then -> # pusher is connected
+  # promise.catch -> @pusherClient not created - connection is impossible
+  @onConnected: ->
+    new Promise (resolve, reject) =>
+      if @pusherClient
+        log "onConnected current state: #{@pusherClient.connection.state}"
+        if @pusherClient.connection.state == "connected"
+          resolve()
+        else
+          @pusherClient.connection.bind 'state_change', ({current}) ->
+            log "onConnected updated state: #{current}"
+            resolve() if current == "connected"
+      else
+        reject "no pusherClient"

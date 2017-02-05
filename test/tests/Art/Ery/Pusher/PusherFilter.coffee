@@ -1,10 +1,13 @@
-{defineModule, randomString, formattedInspect, log} = require 'art-foundation'
+{timeout, defineModule, randomString, formattedInspect, log} = require 'art-foundation'
 {pipelines, session} = require 'art-ery'
 {Config, config} = require 'art-ery-pusher'
 
+subscriptionEstablishmentTimeout = 250
+
 subscribeTest = ({data, requestType, subscriptionPipeline, subscriptionKey}) ->
   subscriptionPipeline ||= "simpleStore"
-  test "#{subscriptionPipeline}.#{requestType} should trigger event", ->
+  test name = "#{subscriptionPipeline}.#{requestType} should trigger event", ->
+    log "start: #{name}"
     listener = channelSubscription = null
 
     pipelines.simpleStore.create()
@@ -17,7 +20,8 @@ subscribeTest = ({data, requestType, subscriptionPipeline, subscriptionKey}) ->
         channelSubscription = Config.pusherClient.subscribe channel
         .bind config.pusherEventName, listener = resolve
 
-        pipelines.simpleStore[requestType] {key: id, data}
+        timeout subscriptionEstablishmentTimeout
+        .then -> pipelines.simpleStore[requestType] {key: id, data}
 
       .then (result) ->
         log "channel: #{channel}, event: #{config.pusherEventName}": {result}
@@ -27,6 +31,8 @@ subscribeTest = ({data, requestType, subscriptionPipeline, subscriptionKey}) ->
 defineModule module, suite:
   "basic requests": ->
     setup ->
+      Config.onConnected()
+      .then -> "log PusherFilter test - pusher connected!"
       # session.reset()
 
     test "create should only notifiy related queries", ->
@@ -64,6 +70,9 @@ defineModule module, suite:
         assert.eq artEryPusherSession, session.data.artEryPusherSession
 
   "round trip tests": ->
+    setup ->
+      Config.onConnected()
+
     subscribeTest
       requestType: "update"
       data: foo: "bar"
