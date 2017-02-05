@@ -14,6 +14,7 @@ sendChanged = (pipeline, key, payload) ->
   {pusherEventName} = config
 
   channel = Config.getPusherChannel pipeline, key
+  log sendChanged: {channel, payload} if config.verbose
   Config.pusherServer?.trigger channel, pusherEventName, payload || {}
 
 defineModule module, class PusherFilter extends Filter

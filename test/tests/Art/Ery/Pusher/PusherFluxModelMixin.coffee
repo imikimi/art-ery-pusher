@@ -1,4 +1,4 @@
-{eq, log, timeout, defineModule, BaseObject} = require 'art-foundation'
+{Promise, eq, log, timeout, defineModule, BaseObject} = require 'art-foundation'
 {FluxSubscriptionsMixin} = require 'art-flux'
 {pipelines, session} = require 'art-ery'
 {Config} = require 'art-ery-pusher'
@@ -40,7 +40,7 @@ defineModule module, suite: ->
 
     .then -> mySubscriber.unsubscribeAll()
 
-  test "query results subscriber full test", ->
+  test "query-results-subscriber record added", ->
     mySubscriber = new MySubscriber
     id = null
 
@@ -68,6 +68,41 @@ defineModule module, suite: ->
       .then -> session.reset()
 
     .then -> mySubscriber.unsubscribeAll()
+
+  test "query-results-subscriber record deleted", ->
+    queryKeyNoodleId = "123"
+    pipelines.simpleStore.reset
+      data:
+        1: foo: "alice",  noodleId: queryKeyNoodleId
+        2: foo: "bill",   noodleId: queryKeyNoodleId
+        3: foo: "cody",   noodleId: queryKeyNoodleId
+        4: foo: "dave",   noodleId: queryKeyNoodleId + "different"
+    .then ->
+      mySubscriber = new MySubscriber
+      id = null
+
+
+      resolver = new Promise (resolve) ->
+        mySubscriber.subscribe
+          modelName:  "pusherTestsByNoodleId"
+          key:        queryKeyNoodleId
+          callback:   ({data}) ->
+            log mySubscriber: callback: {data}
+            if data && eq ["initial value", "second value"], (r.foo for r in data)
+              resolve()
+
+      timeout subscriptionEstablishmentTimeout
+      .then ->
+        log "send delete"
+        pipelines.simpleStore.delete key: "2"
+
+      # normally, the sender of an update will IGNORE the "changed" event from pusher
+      # So, we must reset the session so we don't know we were the sender.
+      .then -> session.reset()
+
+      .then -> resolver
+
+      .then -> mySubscriber.unsubscribeAll()
 
   test "sender ignores updates they caused", ->
     mySubscriber = new MySubscriber

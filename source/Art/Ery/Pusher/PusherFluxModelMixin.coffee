@@ -54,15 +54,27 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
     pusherClient.unsubscribe @_getPusherChannel key
     delete @_channels[key]
 
-  _processPusherChangedEvent: ({key, sender, updatedAt}) =>
-    if sender == session.data.artEryPusherSession
-      log "saved 1 reload due to sender check! (model: #{@name}, key: #{key})"
-      return
+  _processPusherChangedEvent: (event) =>
+    {key, sender, updatedAt, type} = event
 
+    log PusherFluxModelMixin: _processPusherChangedEvent: event
     model = @recordsModel || @
 
-    if (fluxRecord = model.fluxStoreGet key) && fluxRecord.updatedAt >= updatedAt
-      log "saved 1 reload due to updatedAt check! (model: #{@name}, key: #{key})"
-      return
+    switch type
+      when "create", "update"
+        if sender == session.data.artEryPusherSession
+          log "saved 1 reload due to sender check! (model: #{@name}, key: #{key})"
+          return
 
-    model.loadPromise key
+        if (fluxRecord = model.fluxStoreGet key) && fluxRecord.updatedAt >= updatedAt
+          log "saved 1 reload due to updatedAt check! (model: #{@name}, key: #{key})"
+          return
+
+        model.loadPromise key
+
+      when "delete"
+        # TODO: in order to update local queries... we need the queryKey - which needs
+        # the record data for the deleted record -- OR we need to scan all local query data...
+        model.dataDeleted key
+
+      else log.error "PusherFluxModelMixin: _processPusherChangedEvent: unsupported type: #{type}", {event}

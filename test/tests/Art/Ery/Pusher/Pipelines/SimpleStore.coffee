@@ -25,7 +25,7 @@ defineModule module, class SimpleStore extends PusherPipelineMixin KeyFieldsMixi
       dataToKeyString: ({noodleId}) -> noodleId
 
   @handlers
-    reset: -> @db = {}
+    reset: ({data}) -> @db = data || {}
 
     get: ({key}) ->
       @db[key]
