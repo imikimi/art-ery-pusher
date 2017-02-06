@@ -1,4 +1,4 @@
-{defineModule, log, array, randomString, merge} = require 'art-foundation'
+{object, defineModule, log, array, randomString, merge} = require 'art-foundation'
 {PusherPipelineMixin} = require 'art-ery-pusher'
 {Pipeline, KeyFieldsMixin} = require 'art-ery'
 
@@ -25,7 +25,7 @@ defineModule module, class SimpleStore extends PusherPipelineMixin KeyFieldsMixi
       dataToKeyString: ({noodleId}) -> noodleId
 
   @handlers
-    reset: ({data}) -> @db = data || {}
+    reset: ({data}) -> @db = object data, (v, k) -> merge v, id: k
 
     get: ({key}) ->
       @db[key]

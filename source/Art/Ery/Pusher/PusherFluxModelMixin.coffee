@@ -37,7 +37,7 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
 
     @_channels[key] ||= pusherClient.subscribe @_getPusherChannel key
     unless @_listeners[key]
-      @_channels[key].bind pusherEventName, @_listeners[key] = (pusherData) => @_processPusherChangedEvent pusherData
+      @_channels[key].bind pusherEventName, @_listeners[key] = (pusherData) => @_processPusherChangedEvent pusherData, key
 
   # If config.pusher isn't defined: noop
   _unsubscribe: (key) ->
@@ -54,10 +54,10 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
     pusherClient.unsubscribe @_getPusherChannel key
     delete @_channels[key]
 
-  _processPusherChangedEvent: (event) =>
+  _processPusherChangedEvent: (event, channelKey) =>
     {key, sender, updatedAt, type} = event
 
-    log PusherFluxModelMixin: _processPusherChangedEvent: event
+    log PusherFluxModelMixin: _processPusherChangedEvent: {event, channelKey}
     model = @recordsModel || @
 
     switch type
@@ -75,6 +75,8 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
       when "delete"
         # TODO: in order to update local queries... we need the queryKey - which needs
         # the record data for the deleted record -- OR we need to scan all local query data...
+        log "pusher event - delete": {channelKey, key}
         model.dataDeleted key
+        @dataDeleted channelKey, key
 
       else log.error "PusherFluxModelMixin: _processPusherChangedEvent: unsupported type: #{type}", {event}

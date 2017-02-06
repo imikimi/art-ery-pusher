@@ -73,10 +73,10 @@ defineModule module, suite: ->
     queryKeyNoodleId = "123"
     pipelines.simpleStore.reset
       data:
-        1: foo: "alice",  noodleId: queryKeyNoodleId
-        2: foo: "bill",   noodleId: queryKeyNoodleId
-        3: foo: "cody",   noodleId: queryKeyNoodleId
-        4: foo: "dave",   noodleId: queryKeyNoodleId + "different"
+        1: name: "alice",  noodleId: queryKeyNoodleId
+        2: name: "bill",   noodleId: queryKeyNoodleId
+        3: name: "cody",   noodleId: queryKeyNoodleId
+        4: name: "dave",   noodleId: queryKeyNoodleId + "different"
     .then ->
       mySubscriber = new MySubscriber
       id = null
@@ -88,7 +88,7 @@ defineModule module, suite: ->
           key:        queryKeyNoodleId
           callback:   ({data}) ->
             log mySubscriber: callback: {data}
-            if data && eq ["initial value", "second value"], (r.foo for r in data)
+            if data && eq ["alice", "cody"], (r.name for r in data)
               resolve()
 
       timeout subscriptionEstablishmentTimeout
