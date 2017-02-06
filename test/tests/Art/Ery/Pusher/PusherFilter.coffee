@@ -7,7 +7,6 @@ subscriptionEstablishmentTimeout = 250
 subscribeTest = ({data, requestType, subscriptionPipeline, subscriptionKey}) ->
   subscriptionPipeline ||= "simpleStore"
   test name = "#{subscriptionPipeline}.#{requestType} should trigger event", ->
-    log "start: #{name}"
     listener = channelSubscription = null
 
     pipelines.simpleStore.create()
@@ -16,7 +15,6 @@ subscribeTest = ({data, requestType, subscriptionPipeline, subscriptionKey}) ->
       channel = Config.getPusherChannel subscriptionPipeline, subscriptionKey
 
       new Promise (resolve) ->
-        log "starting subscription listener for #{channel}::#{config.pusherEventName}"
         channelSubscription = Config.pusherClient.subscribe channel
         .bind config.pusherEventName, listener = resolve
 
@@ -24,7 +22,6 @@ subscribeTest = ({data, requestType, subscriptionPipeline, subscriptionKey}) ->
         .then -> pipelines.simpleStore[requestType] {key: id, data}
 
       .then (result) ->
-        log "channel: #{channel}, event: #{config.pusherEventName}": {result}
         channelSubscription.unbind listener
         Config.pusherClient.unsubscribe channel
 
@@ -32,8 +29,6 @@ defineModule module, suite:
   "basic requests": ->
     setup ->
       Config.onConnected()
-      .then -> "log PusherFilter test - pusher connected!"
-      # session.reset()
 
     test "create should only notifiy related queries", ->
       pipelines.simpleStore.create data: noodleId: "noodle1"

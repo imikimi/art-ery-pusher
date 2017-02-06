@@ -33,7 +33,6 @@ defineModule module, suite:
             modelName:  "simpleStore"
             key:        id
             callback:   ({data}) ->
-              log mySubscriber: callback: {data}
               resolve() if data?.foo == "second value"
 
         .then -> timeout subscriptionEstablishmentTimeout
@@ -87,7 +86,6 @@ defineModule module, suite:
             modelName:  "pusherTestsByNoodleId"
             key:        queryKeyNoodleId
             callback:   ({data}) ->
-              log {data}
               if data && eq ["initial value", "second value"], (r.foo for r in data)
                 resolve()
 
@@ -174,7 +172,7 @@ defineModule module, suite:
               throw new Error "sender shouldn't get updated" if data.foo == "second value"
 
         .then ->
-          pipelines.simpleStore.update log data: {id, foo: "second value"}
+          pipelines.simpleStore.update data: {id, foo: "second value"}
 
         # give the loop time to complete and fail, if it's going to
         .then ->

@@ -57,7 +57,6 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
   _processPusherChangedEvent: (event, channelKey) =>
     {key, sender, updatedAt, type} = event
 
-    log PusherFluxModelMixin: _processPusherChangedEvent: {event, channelKey}
     model = @recordsModel || @
 
     switch type
@@ -75,7 +74,6 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
       when "delete"
         # TODO: in order to update local queries... we need the queryKey - which needs
         # the record data for the deleted record -- OR we need to scan all local query data...
-        log "pusher event - delete": {channelKey, key}
         model.dataDeleted key
         @dataDeleted channelKey, key
 
