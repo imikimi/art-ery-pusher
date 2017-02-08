@@ -4,6 +4,12 @@
 
 {config} = Config = require './Config'
 {session} = require 'art-ery'
+Pusher = require './namespace'
+
+activeSubscriptions = Pusher.activeSubscriptions = {}
+Pusher.logActiveSubscriptions = ->
+  log activeSubscriptions: Object.keys(activeSubscriptions).sort()
+
 defineModule module, -> (superClass) -> class PusherFluxModelMixin extends superClass
   constructor: ->
     super
@@ -37,6 +43,7 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
 
     @_channels[key] ||= pusherClient.subscribe @_getPusherChannel key
     unless @_listeners[key]
+      activeSubscriptions["#{@name} #{key}"] = true
       @_channels[key].bind pusherEventName, @_listeners[key] = (pusherData) => @_processPusherChangedEvent pusherData, key
 
   # If config.pusher isn't defined: noop
@@ -51,6 +58,7 @@ defineModule module, -> (superClass) -> class PusherFluxModelMixin extends super
       delete @_listeners[key]
 
     # unsubscribe
+    delete activeSubscriptions["#{@name} #{key}"]
     pusherClient.unsubscribe @_getPusherChannel key
     delete @_channels[key]
 
