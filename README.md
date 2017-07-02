@@ -32,7 +32,7 @@ require 'art-ery-pusher/Server'
 
 ## Config
 
-ArtEryPusher uses the standard ArtSuite config system (currently declared in Art.Foundation). The config path is "Art.Ery.Pusher." You can see all configurable options in: source/Art/Ery/Pusher/Config.coffee.
+ArtEryPusher uses the standard ArtSuite config system (currently declared in Art.Foundation). The config path is "Art.Ery.Pusher." You can see all configurable options in: source/Art.EryExtensions.Pusher/Config.coffee.
 
 The ArtSuite config system allows you to set your config in whatever place is most convenient.
 

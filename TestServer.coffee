@@ -2,7 +2,7 @@
 
 require 'art-ery-pusher/Server'
 Server  = require 'art-ery/Server'
-require "./test/tests/Art/Ery/Pusher/Pipelines"
+require "./test/tests/Art.EryExtensions.Pusher/Pipelines"
 
 require "./test/TestConfig"
 

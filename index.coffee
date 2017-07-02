@@ -1,1 +1,1 @@
-module.exports = require "./source/Art/Ery/Pusher"
+module.exports = require "./source/Art.EryExtensions.Pusher"

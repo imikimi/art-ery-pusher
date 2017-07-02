@@ -5,6 +5,7 @@ defineModule module, class Test extends Config
   Art:
     Ery:
       verbose: true
+    EryExtensions:
       Pusher: merge
         verifyConnection: true
         verbose: true

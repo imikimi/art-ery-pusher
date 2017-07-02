@@ -1,0 +1,15 @@
+npm:
+  description: "" Art.Ery.Pusher
+  scripts:
+    testServer: "coffee ./TestServer.coffee"
+
+  dependencies:
+    pusher-js:    :^4.0.0  # client
+    pusher:       :^1.5.1  # server
+
+webpack:
+  # common properties are merged into each target's properties
+  common: {}
+
+  # each target's individual properties
+  targets: index: {}, test: {}
