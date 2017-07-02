@@ -10,7 +10,7 @@ Could be useful for testing.
 
 I'm having problems testing since connections can take a bit to fire up...
 ###
-defineModule module, class ArtEryPusherConfig extends Configurable
+defineModule module, class Config extends Configurable
   ###
   /Client.coffee and /Server.coffee set this appropriatly:
   Should be a function: () -> pusher instance
