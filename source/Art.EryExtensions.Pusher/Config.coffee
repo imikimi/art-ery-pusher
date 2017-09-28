@@ -27,6 +27,7 @@ defineModule module, class Config extends Configurable
     appId:  "..."
     key:    "..."
     secret: "..."
+    cluster: null # specify the pusher cluster
 
     encrypted: true
 
@@ -62,9 +63,9 @@ defineModule module, class Config extends Configurable
 
   @configured: ->
     super
-    {verbose, verifyConnection, key} = @config
+    {verbose, verifyConnection, key, encrypted, cluster} = @config
     if @PusherClient
-      pusher = @pusherClient = new @PusherClient key
+      pusher = @pusherClient = new @PusherClient key, {encrypted, cluster}
 
       verbose && log "ArtEryPusher: PusherClient initialized"
 
