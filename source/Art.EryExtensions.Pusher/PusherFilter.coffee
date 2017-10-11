@@ -3,7 +3,7 @@
   each, formattedInspect, deepMerge, merge, defineModule, log, Validator, m, isFunction, objectHasKeys
   Promise
   isString
-  randomString
+  cryptoRandomString
 } = require 'art-foundation'
 
 {Filter} = require 'art-ery'
@@ -20,15 +20,15 @@ sendChanged = (pipeline, key, payload) ->
 defineModule module, class PusherFilter extends Filter
   @location "server"
   @after all: (response) ->
-    p = if isString response.session.artEryPusherSession
+    switch response.type
+      when "create", "update", "delete"
+      else return response
+
+    (if isString response.session.artEryPusherSession
       Promise.resolve response
     else
-      response.withMergedSession artEryPusherSession: randomString().slice 0, 12 # should produce > 10^20 unique values
-
-    p.then (response) ->
-      switch response.type
-        when "create", "update", "delete"
-        else return response
+      response.withMergedSession artEryPusherSession: cryptoRandomString 12 # should produce > 10^21 unique values
+    ).then (response) ->
 
       Promise.then ->
         {type, key, data, pipelineName, request, pipeline, session} = response
