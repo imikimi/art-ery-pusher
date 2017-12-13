@@ -39,7 +39,8 @@ defineModule module, class Config extends Configurable
 
     pusherEventName: "changed"
 
-    host: "api.pusherapp.com"
+    # NOTE: If you specify a host then the 'cluster' parameter is ignored.
+    # host: "api.pusherapp.com"
 
   # legal channel names: https://pusher.com/docs/client_api_guide/client_channels
   # I think this matches legal channel names: /^[-a-zA-Z0-9_=@,.;]+$/
