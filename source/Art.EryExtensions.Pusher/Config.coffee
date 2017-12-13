@@ -76,7 +76,7 @@ defineModule module, class Config extends Configurable
           log "ArtEryPusher: PusherClient state_change": data
 
     else if @PusherServer
-      @pusherServer = new @PusherServer log "pusher config", @config
+      @pusherServer = new @PusherServer @config
 
       verbose && log "ArtEryPusher: PusherServer initialized"
       verifyConnection && @pusherServer.trigger 'ArtEryPusherConfig', "server", message: "ArtEryPusher: verifyConnection: pusher was initialized correctly", (error, request, response) ->
