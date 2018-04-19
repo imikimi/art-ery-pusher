@@ -4,7 +4,7 @@ npm:
     testServer: "coffee ./TestServer.coffee"
 
   dependencies:
-    pusher-js:    :^4.0.0  # client
+    pusher-js:    :^4.2.2  # client
     pusher:       :^1.5.1  # server
 
 webpack:
