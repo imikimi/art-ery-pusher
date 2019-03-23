@@ -2,7 +2,7 @@
   &ArtClassSystem
   &ArtFlux
   &ArtEry
-  &ArtEryPusher
   &ArtCommunicationStatus
   test: (a...) -> global.test a...
   setup: (a...) -> global.setup a...
+  &ArtEryPusher

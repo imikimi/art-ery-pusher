@@ -85,7 +85,7 @@ class Config extends Configurable
             @verboseLog "" PusherServer initialized correctly.
 
     else
-      @verboseLog "disabled. Require: art-ery-pusher/Client or art-ery-pusher/Server"
+      @verboseLog "" disabled. Require: art-ery-pusher/Client or art-ery-pusher/Server
 
   @verboseLog: (a) ->
     @config.verbose && log "" ArtEryPusher: #{a}
@@ -95,14 +95,14 @@ class Config extends Configurable
     promise.then -> # pusher is connected
     promise.catch -> @pusherClient not created - connection is impossible
   @onConnected: ->
-    new Promise (resolve, reject) =>
+    new Promise (_resolve, reject) =>
       if @pusherClient
-        log "onConnected current state: #{@pusherClient.connection.state}"
-        if @pusherClient.connection.state == "connected"
-          resolve()
+        log "" onConnected current state: #{@pusherClient.connection.state}
+        if @pusherClient.connection.state == :connected
+          _resolve()
         else
-          @pusherClient.connection.bind 'state_change', ({current}) ->
-            log "onConnected updated state: #{current}"
-            resolve() if current == "connected"
+          @pusherClient.connection.bind :state_change ({current}) ->
+            log "" onConnected updated state: #{current}
+            _resolve() if current == :connected
       else
-        reject "no pusherClient"
+        reject "" no pusherClient
