@@ -1,7 +1,7 @@
 npm:
   description: "" Art.Ery.Pusher
   scripts:
-    testServer: "coffee ./TestServer.coffee"
+    testServer: "caf ./TestServer.caf"
 
   dependencies:
     pusher-js:    :^4.2.2  # client

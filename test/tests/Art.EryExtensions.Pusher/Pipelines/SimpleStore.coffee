@@ -5,6 +5,7 @@
 defineModule module, class SimpleStore extends PusherPipelineMixin KeyFieldsMixin Pipeline
 
   @remoteServer "http://localhost:8085"
+  @publicRequestTypes "get create update reset delete pusherTestsByNoodleId"
 
   @filter
     location: "client"

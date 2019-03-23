@@ -8,3 +8,4 @@ module.exports
   PusherFilter:         require './PusherFilter'        
   PusherFluxModelMixin: require './PusherFluxModelMixin'
   PusherPipelineMixin:  require './PusherPipelineMixin' 
+  StandardImport:       require './StandardImport'      
