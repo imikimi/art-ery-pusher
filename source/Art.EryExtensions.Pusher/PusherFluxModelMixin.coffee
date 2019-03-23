@@ -1,6 +1,6 @@
 {
   defineModule, log, merge
-} = require 'art-foundation'
+} = require './StandardImport'
 
 {config} = Config = require './Config'
 {session} = require 'art-ery'
