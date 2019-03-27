@@ -1,8 +1,18 @@
-{defineModule} = require './StandardImport'
+{defineModule, object} = require './StandardImport'
 
 defineModule module, -> (superClass) -> class PusherPipelineMixin extends superClass
   @abstractClass?()
   @fluxModelMixin   require './PusherFluxModelMixin'
+
+  ### getChannelsAndKeysToUpdateOnRecordChange
+    IN: updated record's data
+    OUT: channelName: keyValue
+  ###
+  getChannelsAndKeysToUpdateOnRecordChange: (updatedRecord) ->
+    object @queries, (pipelineQuery) ->
+      pipelineQuery.toKeyString updatedRecord
+
+  getPusherChannel: (queryName, fluxKey) ->
 
   ### Add ArtEry filter
     NOTE: This Filter will run very first after the handler

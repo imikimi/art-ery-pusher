@@ -1,7 +1,7 @@
 import &StandardImport, {} &Config
 
 sendChanged = (pipeline, key, payload) ->
-  Config.config extract pusherEventName
+  Config extract config extract pusherEventName
 
   channel = Config.getPusherChannel pipeline, key
 
@@ -18,9 +18,8 @@ class PusherFilter extends Filter
         artEryPusherSession: cryptoRandomString 12 # should produce > 10^21 unique values
 
   notifyAllQueriesWhichMayNeedUpdating: (pipeline, payload, data)->
-    each pipelineQuery, queryName in pipeline.queries
-      if key = pipelineQuery.toKeyString data
-        sendChanged queryName, key, payload
+    each key, queryName in pipeline.getChannelsAndKeysToUpdateOnRecordChange data
+      sendChanged queryName, key, payload if key?
 
   notifySingleRecordWhichNeedsUpdating: (pipeline, payload, data) ->
     sendChanged pipeline, data, payload
